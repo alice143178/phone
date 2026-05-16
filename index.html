@@ -191,7 +191,26 @@ window.showToast = function(msg, duration=2000) {
   setTimeout(() => el.classList.remove('show'), duration);
 };
 
-boot();
+async function boot() {
+  try {
+    document.getElementById('clockDate').textContent = '正在加载 state...';
+    const { State } = await import('./core/state.js');
+
+    document.getElementById('clockDate').textContent = '正在加载 storage...';
+    const { Storage } = await import('./core/storage.js');
+
+    document.getElementById('clockDate').textContent = '正在加载 router...';
+    const { Router } = await import('./core/router.js');
+
+    document.getElementById('clockDate').textContent = '正在加载 events...';
+    const { Events } = await import('./core/events.js');
+
+    document.getElementById('clockDate').textContent = '全部加载成功！';
+  } catch(e) {
+    showErr(e.message);
+  }
+}
+
 </script>
 </body>
 </html>
