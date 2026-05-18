@@ -30,7 +30,8 @@ html,body{width:100%;height:100dvh;overflow:hidden;background:var(--bg);font-fam
 #homeScreen{
   position:absolute;inset:0;display:flex;flex-direction:column;
   background:var(--bg);
-  background-image:radial-gradient(ellipse 80% 50% at 20% 10%,rgba(93,232,193,0.07) 0%,transparent 60%),
+  background-image:
+    radial-gradient(ellipse 80% 50% at 20% 10%,rgba(93,232,193,0.07) 0%,transparent 60%),
     radial-gradient(ellipse 60% 60% at 80% 80%,rgba(58,184,245,0.06) 0%,transparent 60%);
   overflow:hidden;
 }
@@ -38,15 +39,22 @@ html,body{width:100%;height:100dvh;overflow:hidden;background:var(--bg);font-fam
 #clockTime{font-size:64px;font-weight:200;letter-spacing:-2px;color:rgba(255,255,255,0.92);line-height:1;}
 #clockDate{margin-top:6px;font-size:14px;color:rgba(255,255,255,0.55);}
 #appGrid{flex:1;display:grid;grid-template-columns:repeat(4,1fr);gap:18px 8px;padding:8px 16px 16px;align-content:start;overflow-y:auto;}
-#appGrid::-webkit-scrollbar{display:none;}
 .app-icon-wrap{display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer;}
-.app-icon{width:64px;height:64px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:30px;transition:transform 0.12s,opacity 0.12s;overflow:hidden;}
+.app-icon{width:64px;height:64px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;transition:transform 0.12s,opacity 0.12s;overflow:hidden;}
 .app-icon img{width:100%;height:100%;object-fit:cover;border-radius:16px;}
 .app-icon-wrap:active .app-icon{transform:scale(0.88);opacity:0.8;}
 .app-icon-label{font-size:11.5px;color:rgba(255,255,255,0.75);text-align:center;max-width:70px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .app-icon.placeholder{opacity:0.4;}
-#dock{flex-shrink:0;padding:10px 24px 12px;display:flex;justify-content:space-around;align-items:center;position:relative;}
-#dock::before{content:'';position:absolute;inset:4px 16px;background:rgba(255,255,255,0.04);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:24px;border:1px solid rgba(255,255,255,0.07);pointer-events:none;}
+#dock{
+  flex-shrink:0;
+  padding:10px 24px 14px;
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  background:rgba(255,255,255,0.05);
+  border-top:1px solid rgba(255,255,255,0.08);
+}
+#dock .app-icon-wrap{position:relative;z-index:1;}
 #appLayer{position:absolute;inset:0;display:flex;flex-direction:column;background:var(--bg);transform:translateX(100%);transition:transform 0.28s cubic-bezier(0.4,0,0.2,1);z-index:10;}
 #appLayer.visible{transform:translateX(0);}
 #appLayer.closing{transform:translateX(100%);}
@@ -56,13 +64,12 @@ html,body{width:100%;height:100dvh;overflow:hidden;background:var(--bg);font-fam
 #appHeaderTitle{flex:1;text-align:center;font-size:16px;font-weight:600;}
 #appHeaderRight{width:40px;display:flex;justify-content:flex-end;align-items:center;flex-shrink:0;}
 #appContent{flex:1;overflow:hidden;position:relative;}
-#navBar{height:var(--navbar-h);display:flex;align-items:center;justify-content:space-around;background:rgba(10,11,18,0.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--border);flex-shrink:0;padding:0 32px;z-index:50;}
+#navBar{height:var(--navbar-h);display:flex;align-items:center;justify-content:space-around;background:rgba(10,11,18,0.95);border-top:1px solid var(--border);flex-shrink:0;padding:0 32px;z-index:50;}
 .nav-btn{width:44px;height:44px;border:none;background:transparent;color:rgba(255,255,255,0.5);display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:12px;}
 .nav-btn:active{color:var(--text);background:var(--surface2);}
 #toast{position:fixed;bottom:calc(var(--navbar-h) + 16px);left:50%;transform:translateX(-50%) translateY(20px);background:rgba(30,32,45,0.95);border:1px solid var(--border);color:var(--text);padding:10px 20px;border-radius:24px;font-size:13px;opacity:0;transition:opacity 0.2s,transform 0.2s;pointer-events:none;z-index:999;white-space:nowrap;}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-*{scrollbar-width:none;}
-*::-webkit-scrollbar{display:none;}
+*{scrollbar-width:none;}*::-webkit-scrollbar{display:none;}
 </style>
 </head>
 <body>
@@ -93,7 +100,7 @@ html,body{width:100%;height:100dvh;overflow:hidden;background:var(--bg);font-fam
     <div id="homeScreen">
       <div id="clockWidget">
         <div id="clockTime">00:00</div>
-        <div id="clockDate">åŠ è½½ä¸­...</div>
+        <div id="clockDate">&#x52A0;&#x8F7D;&#x4E2D;...</div>
       </div>
       <div id="appGrid"></div>
       <div id="dock"></div>
@@ -129,60 +136,62 @@ html,body{width:100%;height:100dvh;overflow:hidden;background:var(--bg);font-fam
 
 <script type="module">
 
+/* ---- App list (all non-ASCII as Unicode escapes) ---- */
 var APPS = [
-  { id:'chat',      name:'èŠå¤©',     emoji:'ðŸ’¬', color:'#1a6b45', dock:true  },
-  { id:'contacts',  name:'è”ç³»äºº',   emoji:'ðŸ‘¤', color:'#1a4a7a', dock:true  },
-  { id:'moments',   name:'æœ‹å‹åœˆ',   emoji:'ðŸŒ¸', color:'#6b1a3a', dock:false },
-  { id:'worldbook', name:'ä¸–ç•Œä¹¦',   emoji:'ðŸ“–', color:'#5a4200', dock:false },
-  { id:'theme',     name:'ç¾ŽåŒ–',     emoji:'ðŸŽ¨', color:'#3a1a6b', dock:false },
-  { id:'settings',  name:'è®¾ç½®',     emoji:'S',  color:'#2a2e40', dock:true  },
-  { id:'couple',    name:'æƒ…ä¾£ç©ºé—´', emoji:'ðŸ’•', color:'#6b1a4a', dock:false, placeholder:true },
-  { id:'shop',      name:'è´­ç‰©',     emoji:'ðŸ›’', color:'#5a3a00', dock:false, placeholder:true }
+  { id:'chat',      name:'\u804A\u5929',         emoji:'\uD83D\uDCAC', color:'#1a6b45', dock:true  },
+  { id:'contacts',  name:'\u8054\u7CFB\u4EBA',   emoji:'\uD83D\uDC64', color:'#1a4a7a', dock:true  },
+  { id:'moments',   name:'\u670B\u53CB\u5708',   emoji:'\uD83C\uDF38', color:'#6b1a3a', dock:false },
+  { id:'worldbook', name:'\u4E16\u754C\u4E66',   emoji:'\uD83D\uDCD6', color:'#5a4200', dock:false },
+  { id:'theme',     name:'\u7F8E\u5316',         emoji:'\uD83C\uDFA8', color:'#3a1a6b', dock:false },
+  { id:'settings',  name:'\u8BBE\u7F6E',         emoji:'S',            color:'#2a2e40', dock:true  },
+  { id:'couple',    name:'\u60C5\u4FA3\u7A7A\u95F4', emoji:'\uD83D\uDC95', color:'#6b1a4a', dock:false, placeholder:true },
+  { id:'shop',      name:'\u8D2D\u7269',         emoji:'\uD83D\uDED2', color:'#5a3a00', dock:false, placeholder:true }
 ];
 
-window.showToast = function(msg, duration) {
-  duration = duration || 2000;
+/* ---- Toast ---- */
+window.showToast = function(msg, dur) {
+  dur = dur || 2000;
   var el = document.getElementById('toast');
   el.textContent = msg;
   el.classList.add('show');
-  setTimeout(function(){ el.classList.remove('show'); }, duration);
+  setTimeout(function(){ el.classList.remove('show'); }, dur);
 };
 
-var WEEKS = ['æ˜ŸæœŸæ—¥','æ˜ŸæœŸä¸€','æ˜ŸæœŸäºŒ','æ˜ŸæœŸä¸‰','æ˜ŸæœŸå››','æ˜ŸæœŸäº”','æ˜ŸæœŸå…­'];
+/* ---- Clock ---- */
+var WK = ['\u661F\u671F\u65E5','\u661F\u671F\u4E00','\u661F\u671F\u4E8C',
+          '\u661F\u671F\u4E09','\u661F\u671F\u56DB','\u661F\u671F\u4E94','\u661F\u671F\u516D'];
 
-function updateClock() {
-  var now = new Date();
-  var h = String(now.getHours()).padStart(2,'0');
-  var m = String(now.getMinutes()).padStart(2,'0');
-  document.getElementById('clockTime').textContent = h + ':' + m;
-  document.getElementById('statusTime').textContent = h + ':' + m;
-  var mo = now.getMonth()+1;
-  var d  = now.getDate();
-  var w  = WEEKS[now.getDay()];
-  document.getElementById('clockDate').textContent = now.getFullYear() + 'å¹´' + mo + 'æœˆ' + d + 'æ—¥ ' + w;
+function tick() {
+  var n = new Date();
+  var h = String(n.getHours()).padStart(2,'0');
+  var m = String(n.getMinutes()).padStart(2,'0');
+  var t = h + ':' + m;
+  document.getElementById('clockTime').textContent = t;
+  document.getElementById('statusTime').textContent = t;
+  document.getElementById('clockDate').textContent =
+    n.getFullYear() + '\u5E74' + (n.getMonth()+1) + '\u6708' +
+    n.getDate() + '\u65E5 ' + WK[n.getDay()];
 }
 
+/* ---- Icons ---- */
 function makeIcon(app, State, small) {
   var wrap = document.createElement('div');
   wrap.className = 'app-icon-wrap';
-  var iconEl = document.createElement('div');
-  iconEl.className = 'app-icon' + (app.placeholder ? ' placeholder' : '');
-  iconEl.style.background = app.color;
+  var ic = document.createElement('div');
+  ic.className = 'app-icon' + (app.placeholder ? ' placeholder' : '');
+  ic.style.background = app.color;
   var ci = State.getAppIcon(app.id);
-  if (ci) {
-    var img = document.createElement('img');
-    img.src = ci;
-    iconEl.appendChild(img);
-  } else {
-    iconEl.textContent = app.emoji;
+  if (ci) { var img = document.createElement('img'); img.src = ci; ic.appendChild(img); }
+  else ic.textContent = app.emoji;
+  wrap.appendChild(ic);
+  if (!small) {
+    var lb = document.createElement('div');
+    lb.className = 'app-icon-label';
+    lb.textContent = app.name;
+    wrap.appendChild(lb);
   }
-  var label = document.createElement('div');
-  label.className = 'app-icon-label';
-  label.textContent = app.name;
-  wrap.appendChild(iconEl);
-  if (!small) wrap.appendChild(label);
   wrap.addEventListener('click', function() {
-    if (app.placeholder) { window.showToast('å£å°†ä¸Šç{¯'); return; }
+    if (app.placeholder) { window.showToast('\u5373\u5C06\u4E0A\u7EBF'); return; }
     window._Router.open(app.id, { title: app.name });
   });
   return wrap;
@@ -191,8 +200,7 @@ function makeIcon(app, State, small) {
 function renderHome(State) {
   var grid = document.getElementById('appGrid');
   var dock = document.getElementById('dock');
-  grid.innerHTML = '';
-  dock.innerHTML = '';
+  grid.innerHTML = ''; dock.innerHTML = '';
   APPS.forEach(function(app) {
     grid.appendChild(makeIcon(app, State, false));
     if (app.dock) dock.appendChild(makeIcon(app, State, true));
@@ -211,11 +219,11 @@ function applyTheme(State) {
   }
 }
 
+/* ---- Boot ---- */
 import('./core/state.js').then(function(sm) {
   return import('./core/storage.js').then(function(stm) {
     return import('./core/router.js').then(function(rm) {
       return import('./core/events.js').then(function(em) {
-
         var State   = sm.State;
         var Storage = stm.Storage;
         var Router  = rm.Router;
@@ -227,23 +235,24 @@ import('./core/state.js').then(function(sm) {
         window._Router = Router;
 
         renderHome(State);
-        updateClock();
-        setInterval(updateClock, 5000);
+        tick();
+        setInterval(tick, 5000);
         applyTheme(State);
 
         document.getElementById('navBack').addEventListener('click', function(){ Router.back(); });
         document.getElementById('navHome').addEventListener('click', function(){ Router.home(); });
-        document.getElementById('navRecents').addEventListener('click', function(){ window.showToast('é¦ æ™‚åŒè¿è¡¨'); });
+        document.getElementById('navRecents').addEventListener('click', function(){
+          window.showToast('\u6682\u65E0\u6700\u8FD1\u8BB0\u5F55');
+        });
         document.getElementById('appHeaderBack').addEventListener('click', function(){ Router.back(); });
 
         Events.on('theme:update', function(){ applyTheme(State); renderHome(State); });
         Events.on('home:refresh', function(){ renderHome(State); });
-
       });
     });
   });
 }).catch(function(e) {
-  document.getElementById('clockTime').textContent = 'å‡ºé”™';
+  document.getElementById('clockTime').textContent = '\u51FA\u9519';
   document.getElementById('clockDate').textContent = e.message || String(e);
 });
 
